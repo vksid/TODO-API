@@ -9,6 +9,19 @@ var todoNextId = 1;
 
 app.use(bodyParser.json());
 
+app.delete('/todos/:id', function (req, res) {
+    var todoid = parseInt(req.params.id, 10);
+    
+    var matchedtodo = _.findWhere(todos, {id : todoid});
+    
+    if(!matchedtodo){
+        res.status(404).json({"error" : "no todo found with that id"});
+    }else{
+        todos = _.without(todos, matchedtodo);
+        res.json(matchedtodo);
+    }
+})
+
 app.post('/todos', function (req, res) {
     var body = req.body;
     
