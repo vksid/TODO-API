@@ -13,14 +13,23 @@ app.use(bodyParser.json());
 app.delete('/todos/:id', function (req, res) {
     var todoid = parseInt(req.params.id, 10);
     
-    var matchedtodo = _.findWhere(todos, {id : todoid});
-    
-    if(!matchedtodo){
-        res.status(404).json({"error" : "no todo found with that id"});
-    }else{
-        todos = _.without(todos, matchedtodo);
-        res.json(matchedtodo);
-    }
+    db.todo.destroy({
+        where : {
+            id : todoid
+        }
+    }).then(function (rowsDeleted) {
+        
+        if(rowsDeleted === 0){
+            res.status(404).json({
+                error : 'No todo with id'
+            });
+        } else {
+            res.status(204).send();
+        }
+        
+    }, function (error) {
+        res.status(500).send();
+    })
 })
 
 app.put('/todos/:id', function (req, res) {
